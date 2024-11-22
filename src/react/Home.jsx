@@ -5,6 +5,7 @@ const Home = () => {
   const [feed, setFeed] = useState(null);
 
   //https://dev.to/antdp425/react-fetch-data-from-api-with-useeffect-27le
+  //asynchrone Funktion; useeffect hook
   useEffect(() => {
     fetch('/api/rss')
       .then(response => response.text())
