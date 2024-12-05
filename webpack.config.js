@@ -67,7 +67,13 @@ export default {
       : false
   ),
   module: {
+    //https://stackoverflow.com/questions/52210467/adding-a-csv-file-to-a-webpack-build
     rules: [
+      {
+        test: /\.csv$/,
+        use: 'raw-loader'
+      },
+      
       {
         test: /\.m?js/,
         resolve: {
