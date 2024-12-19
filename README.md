@@ -36,3 +36,6 @@
 # CORS Problem
 //source https://dev.to/codeofrelevancy/how-to-set-up-a-proxy-server-in-react-dealing-with-cors-87e
 //https://stackoverflow.com/questions/31394043/rewriting-path-with-http-proxy-middleware
+
+# firebase.js
+Bitte die firebase.AENDERN.js umbenennen in firebase.js und mit den secrets füllen die ihc euch gegeben habe.
