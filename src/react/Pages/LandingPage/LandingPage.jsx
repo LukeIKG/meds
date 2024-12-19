@@ -6,7 +6,7 @@ import { db } from '../../../firebase'
 const LandingPage = () => {
   useEffect(() => {
     const testUpload = async () => { // async um auf antwort von await zu warten
-      const referenz = doc(db, 'meds', '00822819') // pzn als eindeutiger identifier
+      const referenz = doc(db, 'meds', 'LE2024004233') // pzn als eindeutiger identifier/ unterschiede nur in packungsgrößen
       await setDoc(referenz, {
         pzn: '00822819',
         enr: '2152997',
