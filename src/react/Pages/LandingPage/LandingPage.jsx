@@ -1,14 +1,48 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Container } from '@mui/material'
-import meldungen from '../../../LEMeldungen_2024-11-22-11-42-13.csv'
-//Luke: Ich habe hier raw-loader benutzt, um die csv-Datei zu importieren. siehe SO
-//https://stackoverflow.com/questions/52210467/adding-a-csv-file-to-a-webpack-build
-//yarn add -D raw-loader
+import { doc, setDoc } from 'firebase/firestore'
+import { db } from '../../../firebase'
 
-const LandingPage = () => (
-  <Container maxWidth={false} disableGutters>
-    <pre>{meldungen}</pre>
-  </Container>
-)
+const LandingPage = () => {
+  useEffect(() => {
+    const testUpload = async () => { // async um auf antwort von await zu warten
+      const referenz = doc(db, 'meds', 'LE2024004233') // pzn als eindeutiger identifier/ unterschiede nur in packungsgrößen
+      await setDoc(referenz, {
+        pzn: '00822819',
+        enr: '2152997',
+        bearbeitungsnummer: 'LE2024004233',
+        referenzierteErstmeldung: 'N/A',
+        meldungsart: 'Erstmeldung',
+        beginn: '21.11.2024',
+        ende: '31.01.2025',
+        datumLetzteMeldung: '21.11.2024',
+        artDesGrundes: 'Sonstige',
+        arzneimittelbezeichnung: 'RISPERDAL CONSTA 50 mg',
+        atcCode: 'N05AX08',
+        wirkstoff: 'Risperidon',
+        krankenhausrelevant: 'nein',
+        zulassungsinhaber: 'JANSSEN-CILAG GmbH',
+        telefon: '+49 2137 955-2288',
+        email: 'QS-DE@its.jnj.com',
+        grund: 'Erhöhte Nachfrage',
+        anmerkungZumGrund: 'N/A',
+        alternativpraeparat: 'N/A',
+        datumErstmeldung: '21.11.2024',
+        infoAnFachkreise: 'Vorgesehen',
+        darreichungsform: 'Pulver zur Herstellung einer Depot-Injektionssuspension, Lösungsmittel',
+        timestamp: new Date().toISOString()
+      })
+      console.log('testdatensatz gespeichert')
+    }
+
+    testUpload()
+  }, [])
+
+  return (
+    <Container>
+      FB test
+    </Container>
+  )
+}
 
 export default LandingPage
