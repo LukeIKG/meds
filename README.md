@@ -7,6 +7,10 @@
 - übersicht: https://anwendungen.pharmnet-bund.de/lieferengpassmeldungen/faces/public/meldungen.xhtml
 - RSS-Feed: https://anwendungen.pharmnet-bund.de/lieferengpassmeldungen/rss
 
+# VOR AUSFÜHRUNG
+
+einmal yarn prestart ausführen, damit ihr die lieferengpässe.csv habt im data ordner
+
 # Aufbau daten (geschrieben von claude.ai)
 
 
