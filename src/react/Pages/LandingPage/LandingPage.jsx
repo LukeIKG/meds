@@ -1,14 +1,40 @@
+// LandingPage.jsx
 import React from 'react'
 import { Container } from '@mui/material'
-import meldungen from '../../../LEMeldungen_2024-11-22-11-42-13.csv'
-//Luke: Ich habe hier raw-loader benutzt, um die csv-Datei zu importieren. siehe SO
-//https://stackoverflow.com/questions/52210467/adding-a-csv-file-to-a-webpack-build
-//yarn add -D raw-loader
+import useMedsData from '../../../hooks/useMedsData'
+import Suchfeld from '../../Components/Suchfeld' 
 
-const LandingPage = () => (
-  <Container maxWidth={false} disableGutters>
-    <pre>{meldungen}</pre>
-  </Container>
-)
+const LandingPage = () => {
+  const { isLoading, error, lastUpdate } = useMedsData()
+
+  return (
+    <Container>
+      
+      <h1>Willkommen zur Medikamentensuche</h1>
+
+      <Suchfeld />
+
+      {isLoading && (
+        <div>
+          Lade Daten...
+        </div>
+      )}
+      {error && (
+        <div>
+          Fehler:
+          {' '}
+          {error}
+        </div>
+      )}
+      {lastUpdate && (
+        <div>
+          Letztes Update:
+          {' '}
+          {new Date(lastUpdate).toLocaleString()}
+        </div>
+      )}
+    </Container>
+  )
+}
 
 export default LandingPage
