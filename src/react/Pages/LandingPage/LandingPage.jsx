@@ -2,12 +2,18 @@
 import React from 'react'
 import { Container } from '@mui/material'
 import useMedsData from '../../../hooks/useMedsData'
+import Suchfeld from '../../Components/Suchfeld' 
 
 const LandingPage = () => {
   const { isLoading, error, lastUpdate } = useMedsData()
 
   return (
     <Container>
+      
+      <h1>Willkommen zur Medikamentensuche</h1>
+
+      <Suchfeld />
+
       {isLoading && (
         <div>
           Lade Daten...
