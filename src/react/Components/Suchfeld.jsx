@@ -5,6 +5,7 @@ import { db } from "../../firebase"; // Firebase-Instanz importieren
 
 const Suchfeld = () => {
   const [suchText, setSuchText] = useState(""); // Suchtext für Filterung
+  const [medikamente, setMedikamente] = useState([]); // Alle Medikamente
   const [gefilterteMedikamente, setGefilterteMedikamente] = useState([]); // Gefilterte Medikamente
   const [loading, setLoading] = useState(true); // Ladezustand
   const [error, setError] = useState(null); // Fehlerzustand
@@ -15,10 +16,9 @@ const Suchfeld = () => {
       try {
         const medsRef = collection(db, "meds");
         const querySnapshot = await getDocs(medsRef);
-
         const medsData = querySnapshot.docs.map((doc) => doc.data());
-
-        setGefilterteMedikamente(medsData); // Alle Medikamente speichern
+        setMedikamente(medsData); // Alle Medikamente speichern
+        setGefilterteMedikamente(medsData); // Zeige alle Medikamente initial
       } catch (err) {
         setError("Fehler beim Laden der Medikamente");
         console.error("Fehler beim Laden der Medikamente:", err);
@@ -33,17 +33,18 @@ const Suchfeld = () => {
   // Filtere Medikamente basierend auf dem Suchtext
   useEffect(() => {
     if (suchText === "") {
-      return; // Zeige alle Medikamente, wenn kein Suchtext eingegeben ist
+      setGefilterteMedikamente(medikamente); // Wenn der Suchtext leer ist, alle Medikamente anzeigen
+      return;
     }
 
-    const gefiltert = gefilterteMedikamente.filter((medikament) =>
+    const gefiltert = medikamente.filter((medikament) =>
       medikament.arzneimittelbezeichnung
         ?.toLowerCase()
         .includes(suchText.toLowerCase()) // Filtere nach Arzneimittelbezeichnung
     );
 
     setGefilterteMedikamente(gefiltert); // Gefilterte Daten setzen
-  }, [suchText]);
+  }, [suchText, medikamente]);
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial" }}>
@@ -71,6 +72,8 @@ const Suchfeld = () => {
           }
         }}
         style={{ width: 300 }}
+        clearOnEscape // Damit der Text gelöscht wird, wenn ESC gedrückt wird
+        disableClearable // Verhindert das Leeren der Eingabe beim Klicken auf das Kreuz (außer mit ESC)
       />
 
       {/* Liste der gefilterten Medikamente */}
