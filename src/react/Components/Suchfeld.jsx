@@ -1,53 +1,79 @@
-// Import React, useState und useEffect
 import React, { useState, useEffect } from "react";
-import Papa from "papaparse"; // Für CSV-Verarbeitung
+import { Autocomplete, TextField } from "@mui/material";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebase"; // Firebase-Instanz importieren
 
-// Suchfeld-Komponente
 const Suchfeld = () => {
-  const [suchText, setSuchText] = useState(""); // Suchtextzustand
-  const [medikamente, setMedikamente] = useState([]); // Medikamenten-Daten
-  const [gefilterteMedikamente, setGefilterteMedikamente] = useState([]); // Gefilterte Ergebnisse
+  const [suchText, setSuchText] = useState(""); // Suchtext für Filterung
+  const [gefilterteMedikamente, setGefilterteMedikamente] = useState([]); // Gefilterte Medikamente
+  const [loading, setLoading] = useState(true); // Ladezustand
+  const [error, setError] = useState(null); // Fehlerzustand
 
-  // CSV-Daten laden und parsen
+  // Daten aus Firestore laden
   useEffect(() => {
-    const fetchCSVData = async () => {
+    const fetchMedikamente = async () => {
       try {
-        const response = await fetch("/data/lieferengpässe.csv");
-        const csvText = await response.text();
+        const medsRef = collection(db, "meds");
+        const querySnapshot = await getDocs(medsRef);
 
-        // CSV mit PapaParse parsen
-        const parsedData = Papa.parse(csvText, { header: true });
-        setMedikamente(parsedData.data);
-      } catch (error) {
-        console.error("Fehler beim Laden der CSV-Daten:", error);
+        const medsData = querySnapshot.docs.map((doc) => doc.data());
+
+        setGefilterteMedikamente(medsData); // Alle Medikamente speichern
+      } catch (err) {
+        setError("Fehler beim Laden der Medikamente");
+        console.error("Fehler beim Laden der Medikamente:", err);
+      } finally {
+        setLoading(false); // Ladeanzeige beenden
       }
     };
 
-    fetchCSVData();
+    fetchMedikamente();
   }, []);
 
-  // Handler für Suchtextänderungen
-  const handleSuchTextÄnderung = (event) => {
-    const wert = event.target.value;
-    setSuchText(wert);
+  // Filtere Medikamente basierend auf dem Suchtext
+  useEffect(() => {
+    if (suchText === "") {
+      return; // Zeige alle Medikamente, wenn kein Suchtext eingegeben ist
+    }
 
-    // Filtere die Medikamentenliste basierend auf dem Suchtext
-    const gefiltert = medikamente.filter((medikament) =>
-      medikament.Arzneimittelbezeichnung?.toLowerCase().includes(wert.toLowerCase())
+    const gefiltert = gefilterteMedikamente.filter((medikament) =>
+      medikament.arzneimittelbezeichnung
+        ?.toLowerCase()
+        .includes(suchText.toLowerCase()) // Filtere nach Arzneimittelbezeichnung
     );
-    setGefilterteMedikamente(gefiltert);
-  };
+
+    setGefilterteMedikamente(gefiltert); // Gefilterte Daten setzen
+  }, [suchText]);
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial" }}>
       <h1>Medikamente-Suche</h1>
-      <input
-        type="text"
-        placeholder="Medikament suchen..."
-        value={suchText}
-        onChange={handleSuchTextÄnderung}
-        style={{ padding: "10px", width: "300px", borderRadius: "5px" }}
+
+      {loading && <div>Lade Daten...</div>} {/* Ladeanzeige */}
+      {error && <div>{error}</div>} {/* Fehleranzeige */}
+
+      {/* Autocomplete Feld */}
+      <Autocomplete
+        options={gefilterteMedikamente}
+        getOptionLabel={(option) => option.arzneimittelbezeichnung || ""}
+        onInputChange={(event, newInputValue) => setSuchText(newInputValue)} // Aktualisiere den Suchtext
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Medikament suchen..."
+            variant="outlined"
+            fullWidth
+          />
+        )}
+        onChange={(event, value) => {
+          if (value) {
+            console.log("Ausgewähltes Medikament:", value); // Gibt das ausgewählte Medikament aus
+          }
+        }}
+        style={{ width: 300 }}
       />
+
+      {/* Liste der gefilterten Medikamente */}
       <ul style={{ marginTop: "20px", listStyleType: "none", padding: 0 }}>
         {gefilterteMedikamente.map((medikament, index) => (
           <li
@@ -59,11 +85,11 @@ const Suchfeld = () => {
               marginBottom: "5px",
             }}
           >
-            <strong>{medikament.Arzneimittelbezeichnung}</strong>
-            <p>PZN: {medikament.PZN}</p>
-            <p>Wirkstoffe: {medikament.Wirkstoffe}</p>
-            <p>Beginn: {medikament.Beginn}</p>
-            <p>Ende: {medikament.Ende}</p>
+            <strong>{medikament.arzneimittelbezeichnung}</strong>
+            <p>PZN: {medikament.pzn}</p>
+            <p>Wirkstoffe: {medikament.wirkstoffe}</p>
+            <p>Beginn: {medikament.beginn}</p>
+            <p>Ende: {medikament.ende}</p>
           </li>
         ))}
       </ul>
