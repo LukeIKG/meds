@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { Autocomplete, TextField } from "@mui/material";
+import { Autocomplete, TextField, Button, Box } from "@mui/material";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase"; // Firebase-Instanz importieren
+import { useNavigate } from "react-router-dom";
 
 const Suchfeld = () => {
   const [suchText, setSuchText] = useState(""); // Suchtext für Filterung
   const [gefilterteMedikamente, setGefilterteMedikamente] = useState([]); // Gefilterte Medikamente
+  const [alleMedikamente, setAlleMedikamente] = useState([]); 
   const [loading, setLoading] = useState(true); // Ladezustand
   const [error, setError] = useState(null); // Fehlerzustand
+  const navigate = useNavigate();
+
 
   // Daten aus Firestore laden
   useEffect(() => {
@@ -17,6 +21,7 @@ const Suchfeld = () => {
         const querySnapshot = await getDocs(medsRef);
 
         const medsData = querySnapshot.docs.map((doc) => doc.data());
+        setAlleMedikamente(medsData); // Speicher alle meds
 
         setGefilterteMedikamente(medsData); // Alle Medikamente speichern
       } catch (err) {
@@ -33,6 +38,7 @@ const Suchfeld = () => {
   // Filtere Medikamente basierend auf dem Suchtext
   useEffect(() => {
     if (suchText === "") {
+      setGefilterteMedikamente(alleMedikamente);
       return; // Zeige alle Medikamente, wenn kein Suchtext eingegeben ist
     }
 
@@ -44,6 +50,10 @@ const Suchfeld = () => {
 
     setGefilterteMedikamente(gefiltert); // Gefilterte Daten setzen
   }, [suchText]);
+
+  const handleSearch = () => {
+    navigate("/aftersearch", { state: { meds: gefilterteMedikamente } });
+  };
 
   return (
     <div style={{ padding: "20px", fontFamily: "Arial" }}>
@@ -73,8 +83,8 @@ const Suchfeld = () => {
         style={{ width: 300 }}
       />
 
-      {/* Liste der gefilterten Medikamente */}
-      <ul style={{ marginTop: "20px", listStyleType: "none", padding: 0 }}>
+       {/* Liste der gefilterten Medikamente */}
+      {/* <ul style={{ marginTop: "20px", listStyleType: "none", padding: 0 }}>
         {gefilterteMedikamente.map((medikament, index) => (
           <li
             key={index}
@@ -92,7 +102,18 @@ const Suchfeld = () => {
             <p>Ende: {medikament.ende}</p>
           </li>
         ))}
-      </ul>
+      </ul> */}
+      {/* Search button */}
+      <Box display="flex" justifyContent="center" alignItems="center" mt={2}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSearch}
+          disabled={gefilterteMedikamente.length === 0} 
+        >
+          Zeige Ergebnisse
+        </Button>
+      </Box>
     </div>
   );
 };
