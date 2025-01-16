@@ -1,8 +1,28 @@
 import { useState, useEffect } from 'react'
 import Papa from 'papaparse'
-import { doc, setDoc, collection } from 'firebase/firestore'
+import { doc, setDoc, collection, getDocs, deleteDoc } from 'firebase/firestore'
 import { db } from '../firebase'
 import csvData from '../data/lieferengpaesse.csv?raw'
+
+// vereinfachen arzneimittelname
+const normalizeMedName = (name) => {
+  if (!name) return ''
+
+  return name
+    .replace(/\s+\d+([,.]?\d*)?\s*(mg|g|ml|µg|mcg)\/?(ml|h|g|mg)?(\s+|$)/i, ' ') //mengenangaben löschen, da wir gesagt haben, größen lassen wir erstmal außenvor
+    .replace(/\s+hartkapseln\b/i, '')
+    .replace(/\s+filmtabletten\b/i, '')
+    .replace(/\s+tabletten\b/i, '')
+    .replace(/\s+retardtabletten\b/i, '')
+    .replace(/\s+retardiert\b/i, '')
+    .replace(/\s+depot\b/i, '')
+    .replace(/\s+injektionslösung\b/i, '')
+    .replace(/\s+infusionslösung\b/i, '')
+    .replace(/\s+pulver\b/i, '')
+    .replace(/\s+und\s+lösungsmittel\b/i, '')
+    .trim()
+    .toUpperCase()
+}
 
 function useMedsData() {
   const [loading, setLoading] = useState(true)
@@ -13,13 +33,20 @@ function useMedsData() {
   useEffect(() => {
     async function loadData() {
       try {
+        // Lösche zuerst alle existierenden Dokumente
+        const medsRef = collection(db, 'meds')
+        const snapshot = await getDocs(medsRef)
+        const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref))
+        await Promise.all(deletePromises)
+        console.log('Alle existierenden Dokumente gelöscht')
+
+
         const result = Papa.parse(csvData, {
           header: true,
           delimiter: ';',
           skipEmptyLines: true
         })
 
-        const medsRef = collection(db, 'meds')
 
         const processedData = result.data
           .filter(row => row.Bearbeitungsnummer)
@@ -37,6 +64,7 @@ function useMedsData() {
               datumLetzteMeldung: row['Datum der letzten Meldung'] || 'N/A',
               artDesGrundes: row['Art des Grundes'] || 'N/A',
               arzneimittelbezeichnung: row.Arzneimittlbezeichnung || 'N/A',
+              arzneimittelbezeichnungNormalized: normalizeMedName(row.Arzneimittlbezeichnung),
               atcCode: row['Atc Code'] || 'N/A',
               wirkstoff: row.Wirkstoffe || 'N/A',
               krankenhausrelevant: row.Krankenhausrelevant || 'N/A',
