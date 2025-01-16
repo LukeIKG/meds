@@ -11,14 +11,15 @@ import {
   AppBar,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
-import Suchfeld from "../../../Components/Suchfeld";
 
 function Aftersearch() {
   const location = useLocation();
   const navigate = useNavigate();
 
   // Get meds from router state
-  const [meds, setMeds] = useState(location.state?.meds || []);
+  const [meds, setMeds] = useState(
+    location.state?.meds.map((med, index) => ({ ...med, id: med.id || index })) || []
+  );
   const [favorites, setFavorites] = useState([]);
 
   // Load favorites from local storage
@@ -33,24 +34,24 @@ function Aftersearch() {
   }, [favorites]);
 
   // Toggle favorite status
-  const toggleFavorite = (med) => {
+  const toggleFavorite = (id) => {
     setFavorites((prevFavorites) =>
-      prevFavorites.some((fav) => fav.id === med.id)
-        ? prevFavorites.filter((fav) => fav.id !== med.id)
-        : [...prevFavorites, med]
+      prevFavorites.some((fav) => fav.id === id)
+        ? prevFavorites.filter((fav) => fav.id !== id)
+        : [...prevFavorites, meds.find((med) => med.id === id)]
     );
   };
-  const gefilterteMedikamente = meds;
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="md"
+    sx={{
+      overflowY: "auto",
+      height: "100vh",
+    }}
+    >
       <AppBar position="static">
-        <Box>
-          <Button
-            variant="text"
-            color="inherit"
-            onClick={() => navigate("/")}
-          >
+        <Box p={1}>
+          <Button variant="text" color="inherit" onClick={() => navigate("/")}>
             Back to Landing Page
           </Button>
         </Box>
@@ -61,44 +62,48 @@ function Aftersearch() {
       </Typography>
 
       {/* Medication List */}
-      <div
-      >
-
-      <Grid container spacing={3}>
-          {gefilterteMedikamente.map((medikament, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
+      <div>
+        <Grid container spacing={3}>
+          {meds.map((medikament) => (
+            <Grid item xs={12} sm={6} md={4} key={medikament.id}>
               <Card variant="outlined">
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
-                    {medikament.arzneimittelbezeichnung || "Unknown"}
+                    {medikament.arzneimittelbezeichnungNormalized || "Unknown"}
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
                     Wirkstoffe: {medikament.Wirkstoffe || "N/A"}
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
-                    Begin:{" "}
-                    {medikament.beginn || "N/A"}
-                    </Typography>
+                    Begin: {medikament.beginn || "N/A"}
+                  </Typography>
                   <Typography variant="body2" color="textSecondary">
-                    Ende:{" "}
-                    {medikament.ende || "N/A"}
+                    Ende: {medikament.ende || "N/A"}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    lieferbar: {medikament.lieferbar || "N/A"}
                   </Typography>
                 </CardContent>
                 <CardActions>
                   <Button
                     variant="contained"
-                    color={favorites.some((fav) => fav.id === medikament.id) ? "secondary" : "primary"}
-                    onClick={() => toggleFavorite(medikament)}
+                    color={
+                      favorites.some((fav) => fav.id === medikament.id)
+                        ? "secondary"
+                        : "primary"
+                    }
+                    onClick={() => toggleFavorite(medikament.id)}
                   >
-                    {favorites.some((fav) => fav.id === medikament.id) ? "Remove from Favorites" : "Add to Favorites"}
+                    {favorites.some((fav) => fav.id === medikament.id)
+                      ? "Remove from Favorites"
+                      : "Add to Favorites"}
                   </Button>
                 </CardActions>
               </Card>
             </Grid>
           ))}
         </Grid>
-        </div>
-
+      </div>
 
       {/* Favorites Section */}
       <Box mt={4}>
@@ -111,9 +116,9 @@ function Aftersearch() {
               <Grid item xs={12} sm={6} md={4} key={fav.id}>
                 <Card variant="outlined">
                   <CardContent>
-                    <Typography variant="h6">{fav.name}</Typography>
+                    <Typography variant="h6">{fav.arzneimittelbezeichnung}</Typography>
                     <Typography variant="body2" color="textSecondary">
-                      Active Ingredient: {fav.Wirkstoffe}
+                      Wirkstoffe: {fav.Wirkstoffe || "N/A"}
                     </Typography>
                   </CardContent>
                 </Card>
