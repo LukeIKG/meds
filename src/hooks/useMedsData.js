@@ -4,6 +4,23 @@ import { doc, setDoc, collection, getDocs, deleteDoc } from 'firebase/firestore'
 import { db } from '../firebase'
 import csvData from '../data/lieferengpaesse.csv?raw'
 
+const isLieferbar = (endeDatum) => { // hilfsfunktion um einfacher überblick zu ahben,w as lieferbar ist/ wo es engpässe gibt.
+  if (!endeDatum || endeDatum === 'N/A') return false
+  const ende = new Date(endeDatum)
+  const heute = new Date()
+  return ende < heute
+}
+
+//umgang mit umlauten
+const cleanedCsvData = csvData
+  .replace(/�/g, 'Ae')  // Ä -> Ae
+  .replace(/�/g, 'ae')  // ä -> ae
+  .replace(/�/g, 'Oe')  // Ö -> Oe
+  .replace(/�/g, 'oe')  // ö -> oe
+  .replace(/�/g, 'Ue')  // Ü -> Ue
+  .replace(/�/g, 'ue')  // ü -> ue
+  .replace(/�/g, 'ss')  // ß -> ss
+
 // vereinfachen arzneimittelname
 const normalizeMedName = (name) => {
   if (!name) return ''
@@ -40,13 +57,11 @@ function useMedsData() {
         await Promise.all(deletePromises)
         console.log('Alle existierenden Dokumente gelöscht')
 
-
-        const result = Papa.parse(csvData, {
+        const result = Papa.parse(cleanedCsvData, {
           header: true,
           delimiter: ';',
           skipEmptyLines: true
         })
-
 
         const processedData = result.data
           .filter(row => row.Bearbeitungsnummer)
@@ -61,10 +76,11 @@ function useMedsData() {
               meldungsart: row.Meldungsart || 'N/A',
               beginn: row.Beginn || 'N/A',
               ende: row.Ende || 'N/A',
+              lieferbar: isLieferbar(row.Ende), // zusatzfeld
               datumLetzteMeldung: row['Datum der letzten Meldung'] || 'N/A',
               artDesGrundes: row['Art des Grundes'] || 'N/A',
               arzneimittelbezeichnung: row.Arzneimittlbezeichnung || 'N/A',
-              arzneimittelbezeichnungNormalized: normalizeMedName(row.Arzneimittlbezeichnung),
+              arzneimittelbezeichnungNormalized: normalizeMedName(row.Arzneimittlbezeichnung), // zusatzfeld
               atcCode: row['Atc Code'] || 'N/A',
               wirkstoff: row.Wirkstoffe || 'N/A',
               krankenhausrelevant: row.Krankenhausrelevant || 'N/A',
