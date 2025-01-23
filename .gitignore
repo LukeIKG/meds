@@ -17,6 +17,6 @@ forge.tmp.json
 forge-bundle
 maps-data
 .firebase
-# build
+build
 firebase.js
 lieferengpaesse.csv
