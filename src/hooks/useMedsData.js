@@ -11,22 +11,22 @@ const isLieferbar = (endeDatum) => { // hilfsfunktion um einfacher überblick zu
   return ende < heute
 }
 
-//umgang mit umlauten 
+// umgang mit umlauten
 const cleanedCsvData = csvData
-  .replace(/�/g, 'Ae')  // Ä -> Ae
-  .replace(/�/g, 'ae')  // ä -> ae
-  .replace(/�/g, 'Oe')  // Ö -> Oe
-  .replace(/�/g, 'oe')  // ö -> oe
-  .replace(/�/g, 'Ue')  // Ü -> Ue
-  .replace(/�/g, 'ue')  // ü -> ue
-  .replace(/�/g, 'ss')  // ß -> ss
+  .replace(/�/g, 'Ae') // Ä -> Ae
+  .replace(/�/g, 'ae') // ä -> ae
+  .replace(/�/g, 'Oe') // Ö -> Oe
+  .replace(/�/g, 'oe') // ö -> oe
+  .replace(/�/g, 'Ue') // Ü -> Ue
+  .replace(/�/g, 'ue') // ü -> ue
+  .replace(/�/g, 'ss') // ß -> ss
 
 // vereinfachen arzneimittelname
 const normalizeMedName = (name) => {
   if (!name) return ''
 
   return name
-    .replace(/\s+\d+([,.]?\d*)?\s*(mg|g|ml|µg|mcg)\/?(ml|h|g|mg)?(\s+|$)/i, ' ') //mengenangaben löschen, da wir gesagt haben, größen lassen wir erstmal außenvor
+    .replace(/\s+\d+([,.]?\d*)?\s*(mg|g|ml|µg|mcg)\/?(ml|h|g|mg)?(\s+|$)/i, ' ') // mengenangaben löschen, da wir gesagt haben, größen lassen wir erstmal außenvor
     .replace(/\s+hartkapseln\b/i, '')
     .replace(/\s+filmtabletten\b/i, '')
     .replace(/\s+tabletten\b/i, '')
@@ -50,12 +50,11 @@ function useMedsData() {
   useEffect(() => {
     async function loadData() {
       try {
-        // db wipe
         const medsRef = collection(db, 'meds')
-        const snapshot = await getDocs(medsRef)
-        const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref))
-        await Promise.all(deletePromises)
-        console.log('Alle existierenden Dokumente gelöscht')
+        // const snapshot = await getDocs(medsRef)
+        // const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref))
+        // await Promise.all(deletePromises)
+        // console.log('Alle existierenden Dokumente gelöscht')
 
         const result = Papa.parse(cleanedCsvData, {
           header: true,
@@ -76,11 +75,11 @@ function useMedsData() {
               meldungsart: row.Meldungsart || 'N/A',
               beginn: row.Beginn || 'N/A',
               ende: row.Ende || 'N/A',
-              lieferbar: isLieferbar(row.Ende), // zusatzfeld -> noch nicht korrekt; bisher immer false
+              lieferbar: isLieferbar(row.Ende),
               datumLetzteMeldung: row['Datum der letzten Meldung'] || 'N/A',
               artDesGrundes: row['Art des Grundes'] || 'N/A',
               arzneimittelbezeichnung: row.Arzneimittlbezeichnung || 'N/A',
-              arzneimittelbezeichnungNormalized: normalizeMedName(row.Arzneimittlbezeichnung), // zusatzfeld
+              arzneimittelbezeichnungNormalized: normalizeMedName(row.Arzneimittlbezeichnung),
               atcCode: row['Atc Code'] || 'N/A',
               wirkstoff: row.Wirkstoffe || 'N/A',
               krankenhausrelevant: row.Krankenhausrelevant || 'N/A',
@@ -96,11 +95,11 @@ function useMedsData() {
               timestamp: new Date().toISOString()
             }
 
-            await setDoc(docRef, docData)
+            // await setDoc(docRef, docData)
             return docData
           })
 
-        const results = await Promise.all(processedData) // evt. nicht mit promise arbeiten, sondern mit async await; später werden nur veränderte daten in DB geschrieben
+        const results = await Promise.all(processedData)
 
         setData(results)
         setLastUpdate(new Date().toISOString())
