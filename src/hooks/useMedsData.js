@@ -11,7 +11,7 @@ const isLieferbar = (endeDatum) => { // hilfsfunktion um einfacher überblick zu
   return ende < heute
 }
 
-//umgang mit umlauten
+//umgang mit umlauten 
 const cleanedCsvData = csvData
   .replace(/�/g, 'Ae')  // Ä -> Ae
   .replace(/�/g, 'ae')  // ä -> ae
@@ -50,7 +50,7 @@ function useMedsData() {
   useEffect(() => {
     async function loadData() {
       try {
-        // Lösche zuerst alle existierenden Dokumente
+        // db wipe
         const medsRef = collection(db, 'meds')
         const snapshot = await getDocs(medsRef)
         const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref))
@@ -76,7 +76,7 @@ function useMedsData() {
               meldungsart: row.Meldungsart || 'N/A',
               beginn: row.Beginn || 'N/A',
               ende: row.Ende || 'N/A',
-              lieferbar: isLieferbar(row.Ende), // zusatzfeld
+              lieferbar: isLieferbar(row.Ende), // zusatzfeld -> noch nicht korrekt; bisher immer false
               datumLetzteMeldung: row['Datum der letzten Meldung'] || 'N/A',
               artDesGrundes: row['Art des Grundes'] || 'N/A',
               arzneimittelbezeichnung: row.Arzneimittlbezeichnung || 'N/A',
