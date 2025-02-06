@@ -214,7 +214,7 @@ const Suchfeld = () => {
                     <strong>PZN:</strong> {medikament.pzn}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    <strong>Wirkstoffe:</strong> {medikament.wirkstoffe}
+                    <strong>Wirkstoffe:</strong> {medikament.wirkstoff}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     <strong>Beginn:</strong> {medikament.beginn}

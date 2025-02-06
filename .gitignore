@@ -20,3 +20,5 @@ maps-data
 # build
 firebase.js
 lieferengpaesse.csv
+build/index.html
+index.html
