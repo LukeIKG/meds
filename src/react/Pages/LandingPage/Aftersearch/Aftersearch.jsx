@@ -165,7 +165,7 @@ function Aftersearch() {
                   Ende: {medikament.ende || "N/A"}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
-                  Lieferbar: {medikament.lieferbar || "N/A"}
+                  Lieferbar: {medikament.lieferbar || "Nein"}
                 </Typography>
               </CardContent>
 
