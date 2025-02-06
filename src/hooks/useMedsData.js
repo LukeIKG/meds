@@ -41,11 +41,7 @@ const normalizeMedName = (name) => {
     .toUpperCase()
 }
 
-<<<<<<< HEAD
 function useMedsData() { // arrowfunction
-=======
-function useMedsData() {
->>>>>>> tenne
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [lastUpdate, setLastUpdate] = useState(null)

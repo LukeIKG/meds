@@ -1,10 +1,10 @@
-import React from "react";
-import { Container } from "@mui/material";
-import useMedsData from "../../../hooks/useMedsData";
-import Suchfeld from "../../Components/Suchfeld";
+import React from 'react'
+import { Container } from '@mui/material'
+import useMedsData from '../../../hooks/useMedsData'
+import Suchfeld from '../../Components/Suchfeld'
 
 const LandingPage = () => {
-  const { isLoading, error, lastUpdate } = useMedsData();
+  const { isLoading, error, lastUpdate } = useMedsData()
 
   return (
     <Container>
@@ -13,14 +13,21 @@ const LandingPage = () => {
       <Suchfeld />
 
       {isLoading && <div>Lade Daten...</div>}
-      {error && <div>Fehler: {error}</div>}
+      {error && <div>
+        Fehler:
+        {error}
+                </div>}
       {lastUpdate && (
         <div>
-          Letztes Update: {new Date(lastUpdate).toLocaleString()} {/* ich habe die Zeile aktualisiert */}
+          Letztes Update:
+          {' '}
+          {new Date(lastUpdate).toLocaleString()}
+          {' '}
+          {/* ich habe die Zeile aktualisiert */}
         </div>
       )}
     </Container>
-  );
-};
+  )
+}
 
-export default LandingPage;
+export default LandingPage
