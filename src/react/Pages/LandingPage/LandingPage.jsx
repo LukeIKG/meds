@@ -7,7 +7,7 @@ const LandingPage = () => {
   const { isLoading, error, lastUpdate } = useMedsData()
 
   return (
-    <Container>
+    <Container sx={{ height: '100vh', overflowY: 'auto' }}>
       <h1>Willkommen zur Medikamentensuche</h1>
 
       <Suchfeld />

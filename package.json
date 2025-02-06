@@ -94,6 +94,7 @@
     "@mui/material": "^6.4.0",
     "@mui/styles": "^6.0.2",
     "@mui/system": "^6.0.2",
+    "autosuggest-highlight": "^3.3.4",
     "buffer": "^6.0.3",
     "classnames": "2.5.1",
     "crypto-browserify": "^3.12.0",
