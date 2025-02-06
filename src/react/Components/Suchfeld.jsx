@@ -9,10 +9,13 @@ import {
   Typography,
   CircularProgress,
   Alert,
+  InputAdornment,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search"; // Import für Lupe
+import SearchIcon from "@mui/icons-material/Search"; // Such-Icon
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
+import parse from "autosuggest-highlight/parse";
+import match from "autosuggest-highlight/match";
 
 const Suchfeld = () => {
   const [suchText, setSuchText] = useState("");
@@ -60,13 +63,13 @@ const Suchfeld = () => {
   return (
     <div
       style={{
-        background: "linear-gradient(45deg, #2196f3 30%, #4caf50 90%)", // Sanfter Farbverlauf (blau zu grün)
-        minHeight: "100vh", // Hintergrund über die gesamte Seite
+        background: "linear-gradient(45deg, #42a5f5 30%, #90caf9 90%)", // Sanfter blauer Farbverlauf
+        minHeight: "100vh",
         padding: "20px",
         fontFamily: "Arial, sans-serif",
       }}
     >
-      <Container maxWidth="md" sx={{ paddingY: 4 }}>
+      <Container maxWidth="md" sx={{ py: 4 }}>
         <Typography variant="h4" align="center" gutterBottom>
           Medikamente-Suche
         </Typography>
@@ -82,47 +85,91 @@ const Suchfeld = () => {
           </Alert>
         )}
 
-        {/* Suchfeld mit Lupe, abgerundeten Ecken und Fokus-Effekt */}
+        {/* Floating Search Bar */}
         <Grid
           container
           justifyContent="center"
           sx={{
+            position: "sticky",
+            top: "20px",
+            zIndex: 1000,
+            background: "rgba(255, 255, 255, 0.85)",
+            backdropFilter: "blur(10px)",
+            p: 2,
+            borderRadius: "25px",
+            boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+            transition: "all 0.3s ease-in-out",
+            "&:hover": {
+              boxShadow: "0px 6px 15px rgba(0, 0, 0, 0.15)",
+            },
             my: 2,
-            background: "linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)", // Hintergrundfarbe Verlauf
-            padding: 3,
-            borderRadius: "12px",
           }}
         >
           <Grid item xs={12} sm={8} md={6}>
             <Autocomplete
               options={gefilterteMedikamente}
               getOptionLabel={(option) => option.arzneimittelbezeichnung || ""}
+              value={suchText ? { arzneimittelbezeichnung: suchText } : null}
               onInputChange={(event, newInputValue) => setSuchText(newInputValue)}
+              onChange={(event, newValue) =>
+                setSuchText(newValue ? newValue.arzneimittelbezeichnung : "")
+              }
+              renderOption={(props, option, { inputValue }) => {
+                const matches = match(option.arzneimittelbezeichnung, inputValue);
+                const parts = parse(option.arzneimittelbezeichnung, matches);
+
+                return (
+                  <li {...props} style={{ padding: "8px", borderRadius: "8px" }}>
+                    {parts.map((part, index) => (
+                      <span
+                        key={index}
+                        style={{
+                          fontWeight: part.highlight ? 700 : 400,
+                          color: part.highlight ? "#42a5f5" : "inherit",
+                        }}
+                      >
+                        {part.text}
+                      </span>
+                    ))}
+                  </li>
+                );
+              }}
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Medikament suchen..."
+                  label="Medikament suchen" // Lupe-Emoji entfernt
                   variant="outlined"
                   fullWidth
                   sx={{
                     borderRadius: "25px",
-                    backgroundColor: "#fff",
+                    backgroundColor: "rgba(255, 255, 255, 0.8)",
+                    backdropFilter: "blur(8px)",
+                    transition: "transform 0.2s ease-in-out",
                     "& .MuiOutlinedInput-root": {
                       borderRadius: "25px",
-                      "&:hover fieldset": { borderColor: "primary.main" },
+                      "&:hover fieldset": { borderColor: "#42a5f5" },
                       "&.Mui-focused fieldset": {
-                        borderColor: "#1976d2",
-                        boxShadow: "0px 0px 5px #1976d2",
+                        borderColor: "#42a5f5",
+                        boxShadow: "0px 0px 8px rgba(66, 165, 245, 0.6)",
                       },
+                    },
+                    "&:focus-within": {
+                      transform: "scale(1.05)",
                     },
                   }}
                   InputProps={{
                     ...params.InputProps,
-                    startAdornment: <SearchIcon color="disabled" sx={{ mr: 1 }} />, // Such-Icon links
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon
+                          sx={{ color: "#42a5f5", mr: 1, fontSize: "1.6rem" }}
+                        />
+                      </InputAdornment>
+                    ),
                   }}
                 />
               )}
-              sx={{ width: "100%" }}
+              sx={{ width: "100%", transition: "all 0.3s ease-in-out" }}
               clearOnEscape
               disableClearable
             />
