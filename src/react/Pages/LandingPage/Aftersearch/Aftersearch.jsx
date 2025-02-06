@@ -155,7 +155,7 @@ function Aftersearch() {
                       {fav.arzneimittelbezeichnung}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                      Wirkstoffe: {fav.Wirkstoffe || "N/A"}
+                      Wirkstoffe: {fav.wirkstoffe || "N/A"}
                     </Typography>
                   </CardContent>
                 </Card>
