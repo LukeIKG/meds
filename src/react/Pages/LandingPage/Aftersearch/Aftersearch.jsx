@@ -84,7 +84,7 @@ function Aftersearch() {
           <Button
             variant="text"
             color="inherit"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/landing")}
             sx={{ fontSize: 16, fontWeight: "bold" }}
           >
             Back to Landing Page
