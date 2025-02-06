@@ -94,41 +94,50 @@ function Aftersearch() {
 
        {/* Favorites Section */}
        <Box mt={4} sx={{ textAlign: "center" }}>
-        <Typography variant="h5" gutterBottom sx={{ color: "#444", fontWeight: "bold" }}>
-          My Favorites
-        </Typography>
-        {favorites.length > 0 ? (
-          <Grid container spacing={3} sx={{ justifyContent: "center" }}>
-            {favorites.map((fav) => (
-              <Grid item xs={12} sm={6} md={4} key={fav.id}>
-                <Card
-                  variant="outlined"
-                  sx={{
-                    backgroundColor: "#fff",
-                    borderRadius: 2,
-                    boxShadow: 2,
-                    transition: "transform 0.2s ease-in-out",
-                    "&:hover": { transform: "scale(1.05)" },
-                  }}
-                >
-                  <CardContent sx={{ padding: 2 }}>
-                    <Typography variant="h6" sx={{ color: "#42a5f5", fontWeight: "bold" }}>
-                      {fav.arzneimittelbezeichnung}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      Wirkstoffe: {fav.wirkstoff || "N/A"}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        ) : (
-          <Typography variant="body1" sx={{ color: "#777", fontStyle: "italic", mt: 2 }}>
-            No favorites yet!
+          <Typography variant="h5" gutterBottom sx={{ color: "#444", fontWeight: "bold" }}>
+            My Favorites
           </Typography>
-        )}
-      </Box>
+          {favorites.length > 0 ? (
+            <Grid container spacing={3} sx={{ justifyContent: "center" }}>
+              {favorites.map((fav) => (
+                <Grid item xs={12} sm={6} md={4} key={fav.id}>
+                  <Card
+                    variant="outlined"
+                    sx={{
+                      backgroundColor: "#fff",
+                      borderRadius: 2,
+                      boxShadow: 2,
+                      transition: "transform 0.2s ease-in-out",
+                      "&:hover": { transform: "scale(1.05)" },
+                    }}
+                  >
+                    <CardContent sx={{ padding: 2 }}>
+                      <Typography variant="h6" gutterBottom sx={{ color: "#42a5f5", fontWeight: "bold" }}>
+                        {fav.arzneimittelbezeichnungNormalized || "Unknown"}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        Wirkstoffe: {fav.wirkstoff || "N/A"}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        Begin: {fav.beginn || "N/A"}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        Ende: {fav.ende || "N/A"}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        Lieferbar: {fav.lieferbar || "Nein"}
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <Typography variant="body1" sx={{ color: "#777", fontStyle: "italic", mt: 2 }}>
+              No favorites yet!
+            </Typography>
+          )}
+        </Box>
 
       <Typography variant="h4" gutterBottom sx={{ textAlign: "center", color: "#333", mt: 3 }}>
         Medication List
