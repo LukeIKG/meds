@@ -55,6 +55,18 @@ function Aftersearch() {
   useEffect(() => {
     fetchData();
   }, []);
+  
+  const toggleFavorite = (id) => {
+    setFavorites((prevFavorites) => {
+      const isFavorite = prevFavorites.some((fav) => fav.id === id);
+      if (isFavorite) {
+        return prevFavorites.filter((fav) => fav.id !== id);
+      } else {
+        const medToAdd = meds.find((med) => med.id === id); // Use `meds` directly here
+        return medToAdd ? [...prevFavorites, medToAdd] : prevFavorites;
+      }
+    });
+  };
 
   return (
     <Container
