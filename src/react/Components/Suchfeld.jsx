@@ -6,6 +6,7 @@ import {
   Grid,
   Card,
   CardContent,
+  CardActions,
   Typography,
   CircularProgress,
   Alert,
@@ -17,7 +18,8 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
+ 
 
 const Suchfeld = () => {
   const [suchText, setSuchText] = useState("");
@@ -26,6 +28,8 @@ const Suchfeld = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate(); 
+  const [favorites, setFavorites] = useState([]);
+
 
 
   // Daten aus Firestore laden
@@ -48,6 +52,20 @@ const Suchfeld = () => {
 
     fetchMedikamente();
   }, []);
+
+   // Load favorites from localStorage on mount
+   useEffect(() => {
+    const storedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
+    setFavorites(storedFavorites);
+  }, []);
+
+  // Remove a favorite
+  const removeFavorite = (id) => {
+    const updatedFavorites = favorites.filter((fav) => fav.id !== id);
+    setFavorites(updatedFavorites);
+    localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+  };
+
   const handleSearch = () => {
     navigate("/aftersearch", { state: { meds: gefilterteMedikamente } });
   };
@@ -78,6 +96,38 @@ const Suchfeld = () => {
         fontFamily: "Arial, sans-serif",
       }}
     >
+       <Typography variant="h5" sx={{ textAlign: "center", mt: 4 }}>
+        Meine Favoriten
+      </Typography>
+      <Grid container spacing={2}>
+        {favorites.length > 0 ? (
+          favorites.map((fav) => (
+            <Grid item xs={12} sm={6} md={4} key={fav.id}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6">{fav.arzneimittelbezeichnungNormalized}</Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Wirkstoffe: {fav.wirkstoff || "N/A"}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={() => removeFavorite(fav.id)}
+                  >
+                    Entfernen
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))
+        ) : (
+          <Typography variant="body1" sx={{ textAlign: "center", width: "100%" }}>
+            Noch keine Favoriten gespeichert!
+          </Typography>
+        )}
+      </Grid>
       <Container maxWidth="md" sx={{ py: 4 }}>
         <Typography variant="h4" align="center" gutterBottom>
           Medikamente-Suche
