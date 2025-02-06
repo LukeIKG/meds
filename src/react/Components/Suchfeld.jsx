@@ -10,12 +10,14 @@ import {
   CircularProgress,
   Alert,
   InputAdornment,
+  Button,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search"; // Such-Icon
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
+import { useNavigate } from "react-router-dom"; 
 
 const Suchfeld = () => {
   const [suchText, setSuchText] = useState("");
@@ -23,6 +25,8 @@ const Suchfeld = () => {
   const [gefilterteMedikamente, setGefilterteMedikamente] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); 
+
 
   // Daten aus Firestore laden
   useEffect(() => {
@@ -40,9 +44,14 @@ const Suchfeld = () => {
         setLoading(false);
       }
     };
+    
 
     fetchMedikamente();
   }, []);
+  const handleSearch = () => {
+    navigate("/aftersearch", { state: { meds: gefilterteMedikamente } });
+  };
+
 
   // Filtere Medikamente basierend auf dem Suchtext
   useEffect(() => {
@@ -174,7 +183,18 @@ const Suchfeld = () => {
               disableClearable
             />
           </Grid>
+          <Grid item>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ height: "100%" }}
+              onClick={handleSearch}
+            >
+              Suchen
+            </Button>
+          </Grid>
         </Grid>
+        
 
         {/* Liste der gefilterten Medikamente */}
         <Grid container spacing={2}>
