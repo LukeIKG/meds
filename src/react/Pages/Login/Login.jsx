@@ -15,7 +15,7 @@ const Login = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const { user } = userCredential
-        navigate('/landing') //landingpage
+        navigate('/landing') // Landingpage
         console.log(user)
       })
       .catch((error) => {
@@ -26,19 +26,34 @@ const Login = () => {
   }
 
   return (
-    <Container>
+    <Container
+      maxWidth="xs"
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(45deg, #42a5f5 30%, #90caf9 90%)', // Schöner Farbverlauf
+        padding: 2,
+      }}
+    >
       <Box
         sx={{
-          marginTop: 8,
+          width: '100%',
+          padding: 4,
+          backgroundColor: 'rgba(255, 255, 255, 0.85)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: '25px',
+          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center'
+          alignItems: 'center',
         }}
       >
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
           Medikamenten DB
         </Typography>
-        <Box component="form" onSubmit={onLogin} sx={{ mt: 1 }}>
+        <Box component="form" onSubmit={onLogin} sx={{ width: '100%' }}>
           <TextField
             margin="normal"
             required
@@ -50,6 +65,23 @@ const Login = () => {
             autoFocus
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            sx={{
+              borderRadius: '25px',
+              backgroundColor: 'rgba(255, 255, 255, 0.8)',
+              backdropFilter: 'blur(8px)',
+              transition: 'transform 0.2s ease-in-out',
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '25px',
+                '&:hover fieldset': { borderColor: '#42a5f5' },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#42a5f5',
+                  boxShadow: '0px 0px 8px rgba(66, 165, 245, 0.6)',
+                },
+              },
+              '&:focus-within': {
+                transform: 'scale(1.05)',
+              },
+            }}
           />
           <TextField
             margin="normal"
@@ -62,12 +94,38 @@ const Login = () => {
             autoComplete="current-password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            sx={{
+              borderRadius: '25px',
+              backgroundColor: 'rgba(255, 255, 255, 0.8)',
+              backdropFilter: 'blur(8px)',
+              transition: 'transform 0.2s ease-in-out',
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '25px',
+                '&:hover fieldset': { borderColor: '#42a5f5' },
+                '&.Mui-focused fieldset': {
+                  borderColor: '#42a5f5',
+                  boxShadow: '0px 0px 8px rgba(66, 165, 245, 0.6)',
+                },
+              },
+              '&:focus-within': {
+                transform: 'scale(1.05)',
+              },
+            }}
           />
           <Button
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{
+              mt: 3,
+              mb: 2,
+              borderRadius: '25px',
+              paddingY: 1.5,
+              transition: 'background-color 0.3s ease-in-out',
+              '&:hover': {
+                backgroundColor: '#1e88e5',
+              },
+            }}
           >
             Login
           </Button>
