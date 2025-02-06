@@ -9,6 +9,7 @@ import {
   Grid,
   Box,
   AppBar,
+  Toolbar,
 } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -35,90 +36,126 @@ function Aftersearch() {
 
   // Toggle favorite status
   const toggleFavorite = (id) => {
-    setFavorites((prevFavorites) =>
-      prevFavorites.some((fav) => fav.id === id)
-        ? prevFavorites.filter((fav) => fav.id !== id)
-        : [...prevFavorites, meds.find((med) => med.id === id)]
-    );
+    setFavorites((prevFavorites) => {
+      const isFavorite = prevFavorites.some((fav) => fav.id === id);
+      if (isFavorite) {
+        return prevFavorites.filter((fav) => fav.id !== id); 
+      } else {
+        const medToAdd = meds.find((med) => med.id === id);
+        if (medToAdd) {
+          return [...prevFavorites, medToAdd]; 
+        }
+        return prevFavorites; 
+      }
+    });
   };
+  
 
   return (
-    <Container maxWidth="md"
-    sx={{
-      overflowY: "auto",
-      height: "100vh",
-    }}
+    <Container
+      maxWidth="md"
+      sx={{
+        overflowY: "auto",
+        height: "100vh",
+        backgroundColor: "#f5f5f5",
+        paddingY: 4,
+      }}
     >
-      <AppBar position="static">
-        <Box p={1}>
-          <Button variant="text" color="inherit" onClick={() => navigate("/")}>
+      {/* AppBar for Navigation */}
+      <AppBar position="static" sx={{ backgroundColor: "#1976d2" }}>
+        <Toolbar>
+          <Button
+            variant="text"
+            color="inherit"
+            onClick={() => navigate("/")}
+            sx={{ fontSize: 16, fontWeight: "bold" }}
+          >
             Back to Landing Page
           </Button>
-        </Box>
+        </Toolbar>
       </AppBar>
 
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{ textAlign: "center", color: "#333", mt: 3 }}>
         Medication List
       </Typography>
 
       {/* Medication List */}
-      <div>
-        <Grid container spacing={3}>
-          {meds.map((medikament) => (
-            <Grid item xs={12} sm={6} md={4} key={medikament.id}>
-              <Card variant="outlined">
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {medikament.arzneimittelbezeichnungNormalized || "Unknown"}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Wirkstoffe: {medikament.Wirkstoffe || "N/A"}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Begin: {medikament.beginn || "N/A"}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Ende: {medikament.ende || "N/A"}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    lieferbar: {medikament.lieferbar || "N/A"}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    variant="contained"
-                    color={
-                      favorites.some((fav) => fav.id === medikament.id)
-                        ? "secondary"
-                        : "primary"
-                    }
-                    onClick={() => toggleFavorite(medikament.id)}
-                  >
-                    {favorites.some((fav) => fav.id === medikament.id)
-                      ? "Remove from Favorites"
-                      : "Add to Favorites"}
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </div>
+      <Grid container spacing={3} sx={{ justifyContent: "center" }}>
+        {meds.map((medikament) => (
+          <Grid item xs={12} sm={6} md={4} key={medikament.id}>
+            <Card
+                variant="outlined"
+                sx={{
+                  backgroundColor: "#fff",
+                  borderRadius: 2,
+                  boxShadow: 3,
+                  transition: "transform 0.2s ease-in-out",
+                  "&:hover": { transform: "scale(1.05)" },
+                  display: "flex",            
+                  flexDirection: "column",     
+                  height: "100%",            
+                }}
+              >
+              <CardContent sx={{ flexGrow: 1, padding: 2 }}> {/* Makes content take up available space */}
+                <Typography variant="h6" gutterBottom sx={{ color: "#1976d2", fontWeight: "bold" }}>
+                  {medikament.arzneimittelbezeichnungNormalized || "Unknown"}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  Wirkstoffe: {medikament.wirkstoffe || "N/A"}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  Begin: {medikament.beginn || "N/A"}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  Ende: {medikament.ende || "N/A"}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  Lieferbar: {medikament.lieferbar || "N/A"}
+                </Typography>
+              </CardContent>
+
+              <CardActions sx={{ justifyContent: "center", paddingBottom: 2 }}>
+                <Button
+                  variant="contained"
+                  color={favorites.some((fav) => fav.id === medikament.id) ? "secondary" : "primary"}
+                  onClick={() => toggleFavorite(medikament.id)}
+                  sx={{ width: "90%", fontWeight: "bold" }}
+                >
+                  {favorites.some((fav) => fav.id === medikament.id)
+                    ? "Remove from Favorites"
+                    : "Add to Favorites"}
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
 
       {/* Favorites Section */}
-      <Box mt={4}>
-        <Typography variant="h5" gutterBottom>
+      <Box mt={4} sx={{ textAlign: "center" }}>
+        <Typography variant="h5" gutterBottom sx={{ color: "#444", fontWeight: "bold" }}>
           My Favorites
         </Typography>
         {favorites.length > 0 ? (
-          <Grid container spacing={3}>
+          <Grid container spacing={3} sx={{ justifyContent: "center" }}>
             {favorites.map((fav) => (
               <Grid item xs={12} sm={6} md={4} key={fav.id}>
-                <Card variant="outlined">
-                  <CardContent>
-                    <Typography variant="h6">{fav.arzneimittelbezeichnung}</Typography>
+                <Card
+                  variant="outlined"
+                  sx={{
+                    backgroundColor: "#fff",
+                    borderRadius: 2,
+                    boxShadow: 2,
+                    transition: "transform 0.2s ease-in-out",
+                    "&:hover": { transform: "scale(1.05)" },
+                  }}
+                >
+                  <CardContent sx={{ padding: 2 }}>
+                    <Typography variant="h6" sx={{ color: "#1976d2", fontWeight: "bold" }}>
+                      {fav.arzneimittelbezeichnung}
+                    </Typography>
                     <Typography variant="body2" color="textSecondary">
-                      Wirkstoffe: {fav.Wirkstoffe || "N/A"}
+                      Wirkstoffe: {fav.wirkstoffe || "N/A"}
                     </Typography>
                   </CardContent>
                 </Card>
@@ -126,7 +163,9 @@ function Aftersearch() {
             ))}
           </Grid>
         ) : (
-          <Typography variant="body1">No favorites yet!</Typography>
+          <Typography variant="body1" sx={{ color: "#777", fontStyle: "italic", mt: 2 }}>
+            No favorites yet!
+          </Typography>
         )}
       </Box>
     </Container>
