@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 
 import LandingPage from '../Pages/LandingPage/LandingPage'
 import Login from '../Pages/Login/Login'
+import Aftersearch from '../Pages/LandingPage/Aftersearch/Aftersearch'
 
 // Route path für single page application, Reihenfolge beachten
 // firebase init? configs? wenn emulator: //firebase emulators oder so
@@ -18,6 +19,7 @@ const RootRoutes = () => (
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Navigate to="/login" />} />
       <Route path="/landing" element={<LandingPage />} />
+      <Route path="/aftersearch" element={<Aftersearch />} />
     </Routes>
   </Router>
 )
