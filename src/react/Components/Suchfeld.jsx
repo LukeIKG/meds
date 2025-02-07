@@ -19,7 +19,6 @@ import { db } from "../../firebase";
 import parse from "autosuggest-highlight/parse";
 import match from "autosuggest-highlight/match";
 import { useNavigate } from "react-router-dom";
- 
 
 const Suchfeld = () => {
   const [suchText, setSuchText] = useState("");
@@ -27,10 +26,8 @@ const Suchfeld = () => {
   const [gefilterteMedikamente, setGefilterteMedikamente] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
-
-
 
   // Daten aus Firestore laden
   useEffect(() => {
@@ -48,18 +45,17 @@ const Suchfeld = () => {
         setLoading(false);
       }
     };
-    
 
     fetchMedikamente();
   }, []);
 
-   // Load favorites from localStorage on mount
-   useEffect(() => {
+  // Favoriten aus localStorage laden
+  useEffect(() => {
     const storedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
     setFavorites(storedFavorites);
   }, []);
 
-  // Remove a favorite
+  // Favoriten entfernen
   const removeFavorite = (id) => {
     const updatedFavorites = favorites.filter((fav) => fav.id !== id);
     setFavorites(updatedFavorites);
@@ -69,7 +65,6 @@ const Suchfeld = () => {
   const handleSearch = () => {
     navigate("/aftersearch", { state: { meds: gefilterteMedikamente } });
   };
-
 
   // Filtere Medikamente basierend auf dem Suchtext
   useEffect(() => {
@@ -90,13 +85,13 @@ const Suchfeld = () => {
   return (
     <div
       style={{
-        background: "linear-gradient(45deg, #42a5f5 30%, #90caf9 90%)", // Sanfter blauer Farbverlauf
+        background: "linear-gradient(45deg, #42a5f5 30%, #90caf9 90%)",
         minHeight: "100vh",
         padding: "20px",
         fontFamily: "Arial, sans-serif",
       }}
     >
-       <Typography variant="h5" sx={{ textAlign: "center", mt: 4 }}>
+      <Typography variant="h5" sx={{ textAlign: "center", mt: 4 }}>
         Meine Favoriten
       </Typography>
       <Grid container spacing={2}>
@@ -105,7 +100,9 @@ const Suchfeld = () => {
             <Grid item xs={12} sm={6} md={4} key={fav.id}>
               <Card>
                 <CardContent>
-                  <Typography variant="h6">{fav.arzneimittelbezeichnungNormalized}</Typography>
+                  <Typography variant="h6">
+                    {fav.arzneimittelbezeichnungNormalized}
+                  </Typography>
                   <Typography variant="body2" color="textSecondary">
                     Wirkstoffe: {fav.wirkstoff || "N/A"}
                   </Typography>
@@ -128,6 +125,7 @@ const Suchfeld = () => {
           </Typography>
         )}
       </Grid>
+
       <Container maxWidth="md" sx={{ py: 4 }}>
         <Typography variant="h4" align="center" gutterBottom>
           Medikamente-Suche
@@ -148,6 +146,7 @@ const Suchfeld = () => {
         <Grid
           container
           justifyContent="center"
+          spacing={2}
           sx={{
             position: "sticky",
             top: "20px",
@@ -164,6 +163,7 @@ const Suchfeld = () => {
             my: 2,
           }}
         >
+          {/* Suchfeld (Autocomplete) */}
           <Grid item xs={12} sm={8} md={6}>
             <Autocomplete
               options={gefilterteMedikamente}
@@ -196,7 +196,7 @@ const Suchfeld = () => {
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Medikament suchen" // Lupe-Emoji entfernt
+                  label="Medikament suchen"
                   variant="outlined"
                   fullWidth
                   sx={{
@@ -220,9 +220,7 @@ const Suchfeld = () => {
                     ...params.InputProps,
                     startAdornment: (
                       <InputAdornment position="start">
-                        <SearchIcon
-                          sx={{ color: "#42a5f5", mr: 1, fontSize: "1.6rem" }}
-                        />
+                        <SearchIcon sx={{ color: "#42a5f5", mr: 1, fontSize: "1.6rem" }} />
                       </InputAdornment>
                     ),
                   }}
@@ -233,18 +231,32 @@ const Suchfeld = () => {
               disableClearable
             />
           </Grid>
-          <Grid item>
+
+          {/* Angepasster Suchen-Button */}
+          <Grid item sx={{ display: "flex", alignItems: "center", ml: 2 }}>
             <Button
               variant="contained"
-              color="primary"
-              sx={{ height: "100%" }}
               onClick={handleSearch}
+              sx={{
+                borderRadius: "25px",
+                backgroundColor: "rgba(255, 255, 255, 0.8)",
+                backdropFilter: "blur(8px)",
+                transition: "transform 0.2s ease-in-out, background-color 0.3s ease-in-out",
+                color: "#42a5f5",
+                paddingX: 2,
+                paddingY: 1.5,
+                minHeight: "56px", // Gleiche Höhe wie das TextField (Standardhöhe)
+                boxShadow: "0px 0px 8px rgba(66, 165, 245, 0.6)",
+                "&:hover": {
+                  transform: "scale(1.05)",
+                  backgroundColor: "rgba(255, 255, 255, 0.9)",
+                },
+              }}
             >
               Suchen
             </Button>
           </Grid>
         </Grid>
-        
 
         {/* Liste der gefilterten Medikamente */}
         <Grid container spacing={2}>
